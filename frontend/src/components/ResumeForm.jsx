@@ -4,6 +4,7 @@ import useResumeStore from "../store/useResumeStore";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { format, parse, isValid } from "date-fns";
+import ResumeGamification from "./ResumeGamification";
 
 export default function ResumeForm() {
   const {
@@ -14,7 +15,7 @@ export default function ResumeForm() {
     toggle,
     setToggle,
   } = useResumeStore();
-    const reset = useResumeStore((state) => state.reset);
+  const reset = useResumeStore((state) => state.reset);
 
   // Default to fresher
   const [uploadLoading, setUploadLoading] = useState(false);
@@ -140,7 +141,6 @@ export default function ResumeForm() {
     }
   };
 
-
   const fetchSkillSuggestions = async (input) => {
     try {
       const response = await fetch("http://localhost:5000/suggest-skills", {
@@ -191,7 +191,7 @@ export default function ResumeForm() {
     formData.append("resume", file);
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/extract", {
+      const res = await fetch("http://localhost:5000/extract", {
         method: "POST",
         body: formData,
       });
@@ -230,13 +230,13 @@ export default function ResumeForm() {
       setManualForm(transformedData);
       console.log("Updated manualForm:", transformedData);
 
-        // Auto-toggle to "experienced" if experience data exists and is non-empty
-    if (transformedData.experience && transformedData.experience.length > 0) {
-      setToggle("experienced");
-    } else {
-      setToggle("fresher"); // Optional: Explicitly set to fresher if no experience
-    }
-  } catch (err) {
+      // Auto-toggle to "experienced" if experience data exists and is non-empty
+      if (transformedData.experience && transformedData.experience.length > 0) {
+        setToggle("experienced");
+      } else {
+        setToggle("fresher"); // Optional: Explicitly set to fresher if no experience
+      }
+    } catch (err) {
       console.error("Upload error:", err);
       alert(`Error: ${err.message || "Failed to process resume"}`);
     } finally {
@@ -710,10 +710,8 @@ export default function ResumeForm() {
     console.log("Current manualForm state:", manualForm);
   }, [manualForm]);
 
-
   // on reload , the manual form fields should be empty
 
-  
   // Month/Year Picker Component
   const MonthYearPicker = ({ label, value, onChange, required, disabled }) => {
     const parseDate = (value) => {
@@ -784,32 +782,56 @@ export default function ResumeForm() {
         <h1 className="text-3xl font-bold text-gray-800">Resume Builder</h1>
       </div>
 
-      <div className="flex gap-4 mb-6">
+      <div className="flex gap-4 mb-6 items-center">
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className={`px-4 py-2 rounded-md transition-all duration-300 transform ${
+              toggle === "fresher"
+                ? "bg-blue-600 text-white shadow-md scale-105"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+            onClick={() => setToggle("fresher")}
+            aria-pressed={toggle === "fresher"}
+            aria-label="Switch to Fresher mode"
+          >
+            Fresher
+          </button>
+          <button
+            type="button"
+            className={`px-4 py-2 rounded-md transition-all duration-300 transform ${
+              toggle === "experienced"
+                ? "bg-blue-600 text-white shadow-md scale-105"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+            onClick={() => setToggle("experienced")}
+            aria-pressed={toggle === "experienced"}
+            aria-label="Switch to Experienced mode"
+          >
+            Experienced
+          </button>
+        </div>
+
+        <div className="h-6 w-px bg-gray-300"></div>
+
         <button
           type="button"
-          className={`px-4 py-2 rounded-md transition-all duration-300 transform ${
-            toggle === "fresher"
-              ? "bg-blue-600 text-white shadow-md scale-105"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-          onClick={() => setToggle("fresher")}
-          aria-pressed={toggle === "fresher"}
-          aria-label="Switch to Fresher mode"
+          className="px-4 py-2 rounded-md transition-all duration-300 bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-lg flex items-center gap-2"
+          onClick={() => reset()}
         >
-          Fresher
-        </button>
-        <button
-          type="button"
-          className={`px-4 py-2 rounded-md transition-all duration-300 transform ${
-            toggle === "experienced"
-              ? "bg-blue-600 text-white shadow-md scale-105"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-          onClick={() => setToggle("experienced")}
-          aria-pressed={toggle === "experienced"}
-          aria-label="Switch to Experienced mode"
-        >
-          Experienced
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+              clipRule="evenodd"
+            />
+          </svg>
+          RESET FORM
         </button>
       </div>
 
@@ -979,88 +1001,96 @@ export default function ResumeForm() {
 
       <div className="border-t border-gray-300 my-4"></div>
 
+      {/* Add the gamification component here */}
+      {/* <ResumeGamification resumeData={manualForm} /> */}
+
+      <div className="border-t border-gray-300 my-4"></div>
+
       {/* Professional Summary (for Experienced) */}
-    {toggle === "experienced" && (
-  <div className="space-y-4">
-    <div className="flex justify-between items-center">
-      <h2 className="text-xl font-semibold text-gray-700">
-        Professional Summary
-      </h2>
-      <button
-        onClick={async () => {
-          setIsGenerating(true);
-          try {
-            const response = await fetch("http://localhost:5000/generate-or-enhance-summary", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                existingSummary: manualForm.summary || "",
-                experience: manualForm.experience || [],
-                skills: manualForm.skills || [],
-                projects: manualForm.projects || [], // Include projects
-              }),
-            });
-            const data = await response.json();
-            if (data.summary) {
-              handleFieldChange("summary", data.summary);
-            } else {
-              alert("Error: No summary returned from the server.");
-            }
-          } catch (error) {
-            alert("Error processing summary: " + error.message);
-          } finally {
-            setIsGenerating(false);
-          }
-        }}
-        disabled={isGenerating}
-        className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm ${
-          isGenerating
-            ? "bg-gray-200 cursor-not-allowed"
-            : "bg-blue-100 hover:bg-blue-200 text-blue-800"
-        }`}
-      >
-        {isGenerating ? (
-          <>
-            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-              <circle
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                fill="none"
-                strokeWidth="4"
-              />
-            </svg>
-            {manualForm.summary ? "Enhancing..." : "Generating..."}
-          </>
-        ) : (
-          <>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+      {toggle === "experienced" && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-gray-700">
+              Professional Summary
+            </h2>
+            <button
+              onClick={async () => {
+                setIsGenerating(true);
+                try {
+                  const response = await fetch(
+                    "http://localhost:5000/api/generate-or-enhance-summary",
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        existingSummary: manualForm.summary || "",
+                        experience: manualForm.experience || [],
+                        skills: manualForm.skills || [],
+                        projects: manualForm.projects || [], // Include projects
+                      }),
+                    }
+                  );
+                  const data = await response.json();
+                  if (data.summary) {
+                    handleFieldChange("summary", data.summary);
+                  } else {
+                    alert("Error: No summary returned from the server.");
+                  }
+                } catch (error) {
+                  alert("Error processing summary: " + error.message);
+                } finally {
+                  setIsGenerating(false);
+                }
+              }}
+              disabled={isGenerating}
+              className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm ${
+                isGenerating
+                  ? "bg-gray-200 cursor-not-allowed"
+                  : "bg-blue-100 hover:bg-blue-200 text-blue-800"
+              }`}
             >
-              <path
-                fillRule="evenodd"
-                d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-            {manualForm.summary ? "Enhance with AI" : "Generate with AI"}
-          </>
-        )}
-      </button>
-    </div>
-    <textarea
-      rows={4}
-      className="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-300 outline-none"
-      value={manualForm.summary || ""}
-      onChange={(e) => handleFieldChange("summary", e.target.value)}
-      placeholder="A brief summary about your professional background..."
-    />
-  </div>
-)}
+              {isGenerating ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      fill="none"
+                      strokeWidth="4"
+                    />
+                  </svg>
+                  {manualForm.summary ? "Enhancing..." : "Generating..."}
+                </>
+              ) : (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  {manualForm.summary ? "Enhance with AI" : "Generate with AI"}
+                </>
+              )}
+            </button>
+          </div>
+          <textarea
+            rows={4}
+            className="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-300 outline-none"
+            value={manualForm.summary || ""}
+            onChange={(e) => handleFieldChange("summary", e.target.value)}
+            placeholder="A brief summary about your professional background..."
+          />
+        </div>
+      )}
 
       {/* Experience Section */}
       {/* Experience Section - Only shown for experienced candidates */}
@@ -1498,7 +1528,9 @@ export default function ResumeForm() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm text-gray-500 mb-1">CGPA </label>
+                <label className="block text-sm text-gray-500 mb-1">
+                  CGPA{" "}
+                </label>
                 <input
                   type="text"
                   className="w-full border border-gray-300 rounded-md p-2 text-sm"

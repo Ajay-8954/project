@@ -1015,7 +1015,62 @@ body {
   text-align: right;
 }
 
+/* Work Experience Section */
+                                   
+.work-item {
+  margin-bottom: 1rem;
+  page-break-inside: avoid;
+}
 
+.work-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.work-info {
+  flex: 1;
+  min-width: 0; /* Prevents text overflow */
+}
+
+.work-info h3 {
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin: 0 0 0.1rem 0;
+  line-height: 1.3;
+}
+
+.work-info p {
+  font-size: 0.75rem;
+  color: #4a5568;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.date-right {
+  font-size: 0.75rem;
+  color: #718096;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-align: right;
+  padding-top: 0.1rem; /* Minor alignment adjustment */
+}
+
+.work-list {
+  font-size: 0.75rem;
+  color: #4a5568;
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+}
+
+.work-list li {
+  margin-bottom: 0.1rem;
+  line-height: 1.3;
+}
 
 .skills-grid {
   display: flex; /* Use flex instead of grid for better PDF support */
@@ -1699,7 +1754,7 @@ width: 170mm;
   display: flex;
   align-items: flex-start;
   padding: 0 8px;
-  color: #007bff;
+  color: #1f2937;
   font-size: 13px;
   line-height: 1;
 }
@@ -1772,7 +1827,6 @@ width: 170mm;
   color: white;
   padding: 20px;
   text-align: center;
-    border: 2px solid black;
 }
 
 .template6-header h1 {
@@ -1901,13 +1955,7 @@ width: 170mm;
 body{
   margin:0;
   padding:0;
-}
-
-
-
-
-
-                                     """)
+}                                     """)
 
             pdf_options = {
     "path": output_path,
@@ -1935,5 +1983,4 @@ body{
     except Exception as e:
         print(f"Error details: {str(e)}")
         return {"message": f"PDF generation failed: {str(e)}"}, 500
-
 

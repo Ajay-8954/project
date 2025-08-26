@@ -23,6 +23,7 @@ body{
   background-color: #e94b35;
   color: white;
   text-align: center;
+    padding: 20px;
 }
 
 .template6-header h1 {
@@ -148,4 +149,3 @@ body{
   color: #555;
   margin-left: 10px;
 }
-
