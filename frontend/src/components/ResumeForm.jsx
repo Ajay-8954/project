@@ -4,7 +4,6 @@ import useResumeStore from "../store/useResumeStore";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { format, parse, isValid } from "date-fns";
-import ResumeGamification from "./ResumeGamification";
 
 export default function ResumeForm() {
   const {
@@ -834,6 +833,29 @@ export default function ResumeForm() {
           RESET FORM
         </button>
       </div>
+
+     <div className="text-sm">
+          <a
+            href="./public/AJAY_KUMAR_VISHWAKARMA.pdf" // Replace with the actual path or URL to your sample resume
+            download="sample-resume.pdf"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+            aria-label="Download a sample resume to use as a template"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="font-medium">Download Sample Resume</span>
+          </a>
+        </div>
 
       {/* Upload Box */}
       <div className="space-y-4">

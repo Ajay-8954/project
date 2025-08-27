@@ -152,7 +152,7 @@ const templates = [
 export default function TemplateSelection() {
   const navigate = useNavigate();
   // Access manualForm, resumeId, and setTemplate from useResumeStore
-  const { manualForm, resumeId, setTemplate } = useResumeStore();
+  const { manualForm, resumeId, setTemplate, template } = useResumeStore();
 
   // Handle template selection
   const handleSelect = (id) => {
@@ -169,36 +169,48 @@ export default function TemplateSelection() {
 
   return (
     <div className="min-h-screen flex bg-gradient-to-b from-white via-blue-50 to-blue-100">
-      {/* Left side scrollable vertical template list */}
       <div className="w-[240px] overflow-y-auto h-screen border-0 border-blue-100 bg-white p-4">
         <h1 className="font-bold text-center text-blue-800 mb-6">
           Choose Resume Template
         </h1>
 
-        <div className="">
-          {templates.map(({ id, name, description, PreviewComponent }) => (
-            <div
-              key={id}
-              onClick={() => handleSelect(id)}
-              className="bg-white border border-blue-100 rounded-xl shadow-sm p-3 cursor-pointer hover:shadow-lg hover:scale-[1.01] transition-all duration-200 group"
-              title={`Click to build with the ${name} template`}
-            >
-              <div className="text-center mb-2">
-                <h3 className="text-md font-semibold text-blue-800">{name}</h3>
-                <p className="text-xs text-gray-500">{description}</p>
-              </div>
+        <div>
+          {templates.map(({ id, name, description, PreviewComponent }) => {
+            const isActive = template === id; // ✅ check active
 
-              <div className="h-[170px] overflow-hidden bg-white rounded-md border border-gray-200 shadow-inner p-2">
-                <div className="transform scale-[0.21] origin-top-left pointer-events-none w-[650px]">
-                  <PreviewComponent data={dummyData} />
+            return (
+              <div
+                key={id}
+                onClick={() => handleSelect(id)}
+                className={`bg-white rounded-xl p-3 cursor-pointer transition-all duration-200 group
+                  ${isActive 
+                    ? "border-2 border-blue-500 shadow-lg scale-[1.02]" // Highlight style
+                    : "border border-blue-100 shadow-sm hover:shadow-lg hover:scale-[1.01]"
+                  }`}
+                title={`Click to build with the ${name} template`}
+              >
+                <div className="text-center mb-2">
+                  <h3 className="text-md font-semibold text-blue-800">{name}</h3>
+                  <p className="text-xs text-gray-500">{description}</p>
+                </div>
+
+                <div className="h-[170px] overflow-hidden bg-white rounded-md border border-gray-200 shadow-inner p-2">
+                  <div className="transform scale-[0.21] origin-top-left pointer-events-none w-[650px]">
+                    <PreviewComponent data={dummyData} />
+                  </div>
+                </div>
+
+                <div className={`mt-2 text-center text-xs font-medium transition-opacity
+                  ${isActive 
+                    ? "text-blue-600 opacity-100" 
+                    : "text-gray-400 opacity-0 group-hover:opacity-100"
+                  }`}
+                >
+                  {isActive ? "✔ Selected" : "Click to select this template"}
                 </div>
               </div>
-
-              <div className="mt-2 text-center text-blue-600 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                Click to select this template
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

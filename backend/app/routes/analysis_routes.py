@@ -1,5 +1,3 @@
-
-
 from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
 from flask import current_app
@@ -180,34 +178,53 @@ def get_keyword_gaps():
 
     prompt = f"""
 Analyze this resume against the Job Description with EXTREME precision and ATS relevance.
-    Identify the most critical missing and matched keywords and gaps that directly impact ATS scoring.
+Identify the most critical missing and matched keywords and qualifications that directly impact ATS scoring.
 
-    Keyword Selection Guidelines:
-    1. Prioritize hard skills over soft skills
-    2. Include specific technologies/tools
-    3. Clearly identify missing qualifications,skills,enxperience or requirements from the JD that does not present in resume.
-    4. Highlight present qualifications and keywords that perfectly align with the JD
+Important Matching Rules:
+1. Missing = explicitly present in Job Description but NOT in Resume.
+2. Present = appears in BOTH Job Description and Resume.
+3. A keyword/qualification cannot appear in both lists.
+4. Normalize text before comparison:
+   - Case-insensitive (e.g., MBA = mba = M.B.A).
+   - Ignore punctuation/hyphen differences (e.g., Six Sigma = Six-Sigma).
+   - Expand acronyms:
+       * TQM = Total Quality Management
+       * HRIS = HR Information System / HRMS
+       * PMS = Performance Management System
+   - Treat synonyms/equivalents as matches:
+       * Employer Branding = Employer Brand Management
+       * Talent Acquisition = Recruitment
+       * Learning & Development = Training & Development
+       * Organizational Restructuring = Org Restructure
+   - Treat numeric equivalences:
+       * "20+ years experience" = "over 20 years of experience"
+   - Treat academic qualification variations as equivalent:
+       * PhD = Ph.D. = Ph. D.
+       * MBA (HR/Management) = MBA - HR & Marketing
+5. If resume says “pursuing” for a qualification that JD requires, count it as partially matched (NOT missing).
+6. Only output valid JSON, no explanations, no text outside JSON.
 
-    Return a detailed JSON analysis with:
-    - missing_keywords: array of 5-10 critical missing terms
-    - present_keywords: array of 5-10 perfectly matched terms that common in both resume and JD
-    - missing_qualifications: array of missing requirements
-    - matched_qualifications: array of matched requirements that common in both resume and JD
+Return a JSON object with:
+- missing_keywords: array of 5-10 critical missing terms
+- present_keywords: array of 5-10 perfectly matched terms common in both resume and JD
+- missing_qualifications: array of missing requirements
+- matched_qualifications: array of matched requirements common in both resume and JD
 
-    Example Output:
-    {{
-      "missing_keywords": ["Python", "AWS", "Project Management", "leadership", "Time management"],
-      "present_keywords": ["Java", "SQL", "Team Leadership"],
-      "missing_qualifications": ["1+ to 5+ years experience", "Cloud certification", "Business analytics"],
-      "matched_qualifications": ["Bachelor's Degree", "Agile experience"]
-    }}
+Example Output:
+{{
+  "missing_keywords": ["Succession Planning", "HRIS", "Stakeholder Engagement"],
+  "present_keywords": ["Talent Acquisition Strategy", "Performance Appraisal Systems", "Employer Branding", "TQM", "Six Sigma"],
+  "missing_qualifications": ["Proven ability to lead multi-cultural and multi-sector HR teams"],
+  "matched_qualifications": ["Ph.D. (HR) pursuing", "MBA - HR & Marketing", "20+ years HR experience", "Bachelor of Commerce"]
+}}
 
-    Job Description:
-    {jd_text}
-    
-    Resume Text:
-    {resume_text}
-    """
+Job Description:
+{jd_text}
+
+Resume Text:
+{resume_text}
+"""
+
     
     try:
         response = client.chat.completions.create(
@@ -280,81 +297,3 @@ Based on the resume and JD, find the most critical gaps. Generate 5-10 direct qu
         return jsonify({"error": f"Failed to generate questions: {str(e)}"}), 500
 
 
-@analysis_bp.route('/generate_feedback_from_jd', methods=['POST'])
-def generate_feedback_from_jd():
-    try:
-        data = request.get_json()
-        jd = data.get('jd')
-        resume_text = data.get('resume_text')
-
-        if not jd or not resume_text:
-            return jsonify({"error": "JD or resume text missing"}), 400
-
-        prompt = f"""You are an expert Career Coach and ATS (Applicant Tracking System) evaluator.
-
-Your task is to compare a Job Description (JD) and a Resume. Based on this comparison, analyze and return insights that help the candidate improve alignment for better hiring outcomes. 
-
-Generate and return your response strictly in the following JSON format:
-
-{{
-  "ats_score": number (0-100),
-  "feedback": "string",
-  "strengths": ["string", "string", ...],
-  "weaknesses": ["string", "string", ...],
-  "matching_skills": ["string", "string", ...],
-  "missing_skills": ["string", "string", ...],
-  "improvement_tips": ["string", "string", ...],
-  "questions": ["string", "string", "string", ...]
-}}
-
-JD:
-\"\"\"{jd}\"\"\"
-
-Resume:
-\"\"\"{resume_text}\"\"\"
-
-Respond only in valid JSON format.
-"""
-
-        response = client.chat.completions.create(
-            # model="gpt-4o",
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.1,
-            max_tokens=1000
-        )
-
-        # Get raw response from GPT
-        result = response.choices[0].message.content.strip()
-
-        # Remove markdown formatting (e.g., json ... )
-        if result.startswith("```"):
-            result = result.strip("`").strip()
-            if result.lower().startswith("json"):
-                result = result[4:].strip()
-
-        # Attempt to parse as JSON
-        try:
-            parsed_result = json.loads(result)
-        except json.JSONDecodeError:
-            # Fallback using ast.literal_eval if GPT returns Python-style dict
-            parsed_result = ast.literal_eval(result)
-
-        # Normalize questions if it's a string
-        questions = parsed_result.get("questions", [])
-        if isinstance(questions, str):
-            questions = [q.strip() for q in re.split(r'[\n\-•]', questions) if q.strip()]
-
-        return jsonify({
-            "ats_score": parsed_result.get("ats_score", 0),
-            "feedback": parsed_result.get("feedback", "No feedback generated."),
-            "strengths": parsed_result.get("strengths", []),
-            "weaknesses": parsed_result.get("weaknesses", []),
-            "matching_skills": parsed_result.get("matching_skills", []),
-            "missing_skills": parsed_result.get("missing_skills", []),
-            "improvement_tips": parsed_result.get("improvement_tips", []),
-            "questions": questions
-        })
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
