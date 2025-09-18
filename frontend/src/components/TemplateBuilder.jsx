@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Download,
   Save,
@@ -7,6 +7,8 @@ import {
   RefreshCw,
   CheckCircle2,
   XCircle,
+  Menu,
+  X,
 } from "lucide-react";
 import ResumeForm from "./ResumeForm";
 import Google from "./templates/Google";
@@ -39,7 +41,6 @@ export default function TemplateBuilder({
     reset,
   } = useResumeStore();
   
-
   // Refs for preview and scrolling
   const previewRef = useRef();
   const topRef = useRef();
@@ -51,6 +52,8 @@ export default function TemplateBuilder({
   const [saveStatus, setSaveStatus] = useState("idle"); // idle | saving | saved | error
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [activeView, setActiveView] = useState("form"); // 'form' or 'preview' for mobile
 
   // Required fields for step validation
   const requiredFields = ["Name", "email", "phone", "education"];
@@ -67,7 +70,6 @@ export default function TemplateBuilder({
 
   // Initialize manualForm with default structure only on mount
   useEffect(() => {
-    // Since useResumeStore already initializes manualForm, we only need to ensure it's not null
     if (!manualForm) {
       console.log("Initializing manualForm with default structure");
       setManualForm({
@@ -91,14 +93,13 @@ export default function TemplateBuilder({
         certifications: [],
       });
     }
-  }, [setManualForm]); // Remove manualForm from dependencies to prevent loop
+  }, [setManualForm]);
 
   // Handle navigation state and initialize form
   useEffect(() => {
     const state = location.state || {};
     console.log("Navigation state:", state);
 
-    // Reset manualForm only when explicitly creating a new resume
     if (
       !state.resumeId &&
       !resumeId &&
@@ -108,7 +109,7 @@ export default function TemplateBuilder({
       (!manualForm || !Object.keys(manualForm).length)
     ) {
       console.log("Resetting form for new resume");
-      reset(); // Reset store for new resume
+      reset();
       setTitle("Untitled Resume");
     } else if (state.content || resumeData) {
       console.log("Populating form with existing data");
@@ -151,16 +152,15 @@ export default function TemplateBuilder({
     console.log("Current manualForm:", JSON.stringify(manualForm, null, 2));
   }, [manualForm]);
 
-
   useEffect(() => {
-  const handleBeforeUnload = () => {
-    console.log("Clearing state before page unload");
-    reset();
-  };
+    const handleBeforeUnload = () => {
+      console.log("Clearing state before page unload");
+      reset();
+    };
 
-  window.addEventListener("beforeunload", handleBeforeUnload);
-  return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-}, [reset]);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [reset]);
 
   // Merge dataToBuild with manualForm
   useEffect(() => {
@@ -393,14 +393,53 @@ export default function TemplateBuilder({
     }
   };
 
+  // Mobile view toggle with template selection button
+const MobileViewToggle = () => (
+  <div className="lg:hidden  flex justify-between items-center mb-4 bg-white p-2 rounded-lg shadow-sm">
+    <button
+      onClick={() => setIsMobileSidebarOpen(true)}
+      className="flex items-center gap-2 px-3 py-4 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+    >
+      <Menu size={16} />
+      Templates
+    </button>
+    
+    <div className="flex border border-blue-200 rounded-md overflow-hidden">
+      <button
+        className={`px-4 py-2 text-sm font-medium ${
+          activeView === "form" 
+            ? "bg-blue-600 text-white" 
+            : "bg-white text-gray-700 hover:bg-gray-50"
+        }`}
+        onClick={() => setActiveView("form")}
+      >
+        Edit Resume
+      </button>
+      <button
+        className={`px-4 py-2 text-sm font-medium ${
+          activeView === "preview" 
+            ? "bg-blue-600 text-white" 
+            : "bg-white text-gray-700 hover:bg-gray-50"
+        }`}
+        onClick={() => setActiveView("preview")}
+      >
+        Preview
+      </button>
+    </div>
+  </div>
+);
+  
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 m-3" ref={topRef}>
-      {/* Step Indicator */}
-      <div className="sticky top-0 z-50 bg-white shadow-md py-3 px-2 border-b border-gray-200">
+    <div className="flex flex-col min-h-screen bg-gray-50" ref={topRef}>
+      {/* Mobile Header */}
+    
+
+      {/* Step Indicator - Mobile Version */}
+      <div className="sticky top-0 z-40 bg-white shadow-md py-3 px-2 border-b border-gray-200 lg:top-0">
         <div className="max-w-5xl mx-auto flex justify-between items-center relative">
           {[
-            { step: 1, label: "Choose Template" },
-            { step: 2, label: "Create Resume" },
+            { step: 1, label: "Template" },
+            { step: 2, label: "Details" },
           ].map(({ step, label }, idx, arr) => {
             const isActive = currentStep === step;
             const isComplete = completedSteps.includes(step);
@@ -428,13 +467,17 @@ export default function TemplateBuilder({
                         ? "bg-green-500"
                         : "bg-gray-300"
                     }`}
-                    style={{ width: "100px", transform: "translateY(-50%)" }}
+                    style={{ 
+                      width: "calc(100% - 2rem)", 
+                      transform: "translateY(-50%)",
+                      maxWidth: "80px"
+                    }}
                   />
                 )}
                 <motion.div
                   whileTap={{ scale: canClickStep ? 0.9 : 1 }}
                   whileHover={{ scale: canClickStep ? 1.05 : 1 }}
-                  className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 transition
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition
               ${
                 isComplete
                   ? "bg-green-600 border-green-600 text-white"
@@ -445,10 +488,10 @@ export default function TemplateBuilder({
                   : "bg-gray-200 border-gray-300 text-gray-600 group-hover:border-blue-400 group-hover:text-blue-600"
               }`}
                 >
-                  {isComplete ? <Check className="w-4 h-4" /> : step}
+                  {isComplete ? <Check className="w-3 h-3" /> : step}
                 </motion.div>
                 <span
-                  className={`mt-1 text-xs font-medium transition-colors ${
+                  className={`mt-1 text-xs font-medium transition-colors text-center ${
                     isActive || isComplete
                       ? "text-gray-900"
                       : !canClickStep
@@ -457,11 +500,6 @@ export default function TemplateBuilder({
                   }`}
                 >
                   {label}
-                  {isStepDisabled && (
-                    <span className="block text-xs text-gray-500 mt-1">
-                      Fill required fields
-                    </span>
-                  )}
                 </span>
               </div>
             );
@@ -469,13 +507,65 @@ export default function TemplateBuilder({
         </div>
       </div>
 
+      {/* Floating Menu Button for Mobile */}
+      <motion.button
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="lg:hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+        onClick={() => setIsMobileSidebarOpen(true)}
+        whileTap={{ scale: 0.9 }}
+      >
+        <Menu size={24} />
+      </motion.button>
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isMobileSidebarOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black z-40 lg:hidden"
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+            <motion.div
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: "tween", ease: "easeInOut" }}
+              className="fixed left-0 top-0 h-full w-72 bg-white shadow-xl z-50 lg:hidden"
+            >
+              <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Templates</h2>
+                <button
+                  onClick={() => setIsMobileSidebarOpen(false)}
+                  className="p-1 rounded-md text-gray-500 hover:bg-gray-100"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-4 overflow-y-auto h-full">
+                <TemplateSelection onSelect={() => setIsMobileSidebarOpen(false)} />
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       {/* Main Layout */}
       <div className="flex flex-grow">
-        <div className="w-55 min-w-[240px] border-r border-blue-100 bg-white shadow-md sticky top-0 h-screen">
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block w-55 min-w-[240px] border-r border-blue-100 bg-white shadow-md sticky top-0 h-screen">
           <TemplateSelection />
         </div>
-        <div className="flex flex-col lg:flex-row gap-2 px-2 py-1 w-full max-w-[calc(100%-240px)] mx-auto">
-          <section className="w-full lg:w-1/2 bg-white shadow-md transition-all">
+        
+        <div className="flex  flex-col lg:flex-row gap-4  w-full mx-auto">
+          {/* Mobile View Toggle */}
+          <MobileViewToggle />
+          
+          {/* Form Section - Hidden on mobile when preview is active */}
+          <section className={`w-full lg:w-1/2 bg-white rounded-lg shadow-md transition-all ${activeView === "preview" ? "hidden lg:block" : "block"}`}>
             {loading ? (
               <div className="flex flex-col items-center justify-center py-16 text-blue-600">
                 <div className="w-10 h-10 border-4 border-blue-300 border-t-transparent rounded-full animate-spin mb-4"></div>
@@ -485,18 +575,20 @@ export default function TemplateBuilder({
               <ResumeForm />
             )}
           </section>
-          <section className="w-full lg:w-1/2 bg-white rounded-xl p-2 max-h-[100vh] sticky top-4">
+          
+          {/* Preview Section - Hidden on mobile when form is active */}
+          <section className={`w-full lg:w-1/2 bg-white rounded-lg p-4 lg:sticky lg:top-4 ${activeView === "form" ? "hidden lg:block" : "block"}`}>
             <div className="sticky top-0 bg-white pb-3 z-10 flex flex-col gap-2 border-0 border-gray-200 mb-4">
-              <div className="flex items-center gap-4 flex-1">
+              <div className="flex items-center gap-2 flex-1 flex-wrap">
                 <button
                   onClick={handleDownloadPDF}
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed flex-1 min-w-[140px] justify-center"
                   disabled={downloadLoading}
                 >
                   {downloadLoading ? (
                     <div className="flex items-center gap-2">
                       <svg
-                        className="animate-spin h-5 w-5 text-white"
+                        className="animate-spin h-4 w-4 text-white"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -519,20 +611,20 @@ export default function TemplateBuilder({
                     </div>
                   ) : (
                     <>
-                      <Download size={20} className="inline" />
+                      <Download size={16} className="inline" />
                       Download PDF
                     </>
                   )}
                 </button>
                 <button
                   onClick={saveResume}
-                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed flex-1 min-w-[140px] justify-center"
                   disabled={saveLoading}
                 >
                   {saveLoading ? (
                     <div className="flex items-center gap-2">
                       <svg
-                        className="animate-spin h-5 w-5 text-white"
+                        className="animate-spin h-4 w-4 text-white"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -555,14 +647,28 @@ export default function TemplateBuilder({
                     </div>
                   ) : (
                     <>
-                      <Save size={20} className="inline" />
+                      <Save size={16} className="inline" />
                       Save Resume
                     </>
                   )}
                 </button>
               </div>
+              
+              {/* Save Status Indicator */}
+              {saveStatus !== "idle" && (
+                <div className={`text-xs mt-1 px-2 py-1 rounded ${
+                  saveStatus === "saving" ? "bg-blue-100 text-blue-800" :
+                  saveStatus === "saved" ? "bg-green-100 text-green-800" :
+                  "bg-red-100 text-red-800"
+                }`}>
+                  {saveStatus === "saving" && "Saving..."}
+                  {saveStatus === "saved" && "Resume saved successfully!"}
+                  {saveStatus === "error" && "Error saving resume. Please try again."}
+                </div>
+              )}
             </div>
-            <div className="max-h-[80vh] overflow-y-auto p-4 bg-white shadow-inner">
+            
+            <div className="max-h-[calc(100vh-180px)] fixed overflow-y-auto p-4 bg-gray-50 rounded-lg">
               {renderPreview()}
             </div>
           </section>

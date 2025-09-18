@@ -18,6 +18,7 @@ import Meta from "./templates/Meta";
 import Microsoft from "./templates/Microsoft";
 import Template4 from "./templates/Template4";
 import Template5 from "./templates/Template5";
+import Template6 from "./templates/Template6";
 
 const Dashboard = () => {
   const [editingResumeId, setEditingResumeId] = useState(null);
@@ -95,6 +96,8 @@ const Dashboard = () => {
         return <Template4 {...props}/>
       case "template5":
         return <Template5 {...props}/>
+      case "template6":
+        return <Template6 {...props}/>
       default:
         return (
           <div className="text-center text-gray-500 py-10 px-4">
@@ -198,12 +201,12 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-10">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-10">
       <div className="max-w-7xl mx-auto">
         {/* Toast Notification */}
         {toast.visible && (
           <div
-            className={`fixed top-4 right-4 px-4 py-2 rounded-md text-white text-sm font-medium shadow-lg transition-all duration-300 ${
+            className={`fixed top-4 right-4 px-4 py-2 rounded-md text-white text-sm font-medium shadow-lg transition-all duration-300 z-50 ${
               toast.type === "success" ? "bg-green-500" : "bg-red-500"
             }`}
           >
@@ -212,74 +215,74 @@ const Dashboard = () => {
         )}
 
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 border-b-2 border-gray-200 pb-6">
-          <div className="mb-6 md:mb-0">
-            <h1 className="text-3xl md:text-4xl font-extrabold mb-1 text-gray-900">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 lg:mb-12 border-b-2 border-gray-200 pb-4 md:pb-6">
+          <div className="mb-4 md:mb-0">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-1 text-gray-900">
               Hello, {user.username}!
             </h1>
-            <p className="text-lg md:text-xl text-gray-600">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600">
               Manage your professional profiles here.
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto mt-4 md:mt-0">
             <button
               onClick={handleCreateNew}
-              className="group flex items-center justify-center px-6 py-3 text-white bg-blue-500 hover:bg-purple-400 rounded-lg text-lg font-semibold shadow-lg shadow-blue-500/30 transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98]"
+              className="group flex items-center justify-center px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 text-white bg-blue-500 hover:bg-purple-400 rounded-lg text-base sm:text-lg font-semibold shadow-lg shadow-blue-500/30 transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98]"
               aria-label="Create New Resume"
             >
               <PenTool
-                className="mr-2 transition-transform duration-300 group-hover:rotate-12"
-                size={20}
+                className="mr-1 sm:mr-2 transition-transform duration-300 group-hover:rotate-12"
+                size={18}
               />
-              <span>Create New Resume</span>
+              <span className="text-sm sm:text-base">Create New</span>
             </button>
             <button
               onClick={handleAnalyzeScore}
-              className="group flex items-center justify-center px-6 py-3 border border-slate-300 text-slate-700 bg-green-400 hover:bg-slate-400 rounded-lg text-lg font-semibold shadow-sm transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98]"
+              className="group flex items-center justify-center px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 border border-slate-300 text-slate-700 bg-green-400 hover:bg-slate-400 rounded-lg text-base sm:text-lg font-semibold shadow-sm transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98]"
               aria-label="Analyze Score"
             >
-              <Sparkles size={20} className="sm:w-6 sm:h-6" />
-              <span>Analyze Score</span>
+              <Sparkles size={18} className="mr-1 sm:mr-2" />
+              <span className="text-sm sm:text-base">Analyze Score</span>
             </button>
           </div>
         </div>
 
         {/* Your Resumes Section */}
         <section>
-          <h2 className="text-3xl font-bold mb-6 text-gray-800">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800">
             Your Resumes
           </h2>
 
           {loadingResumes ? (
-            <div className="flex flex-col items-center justify-center py-20 space-y-4">
-              <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-xl font-medium text-gray-600">
+            <div className="flex flex-col items-center justify-center py-12 sm:py-16 md:py-20 space-y-3 sm:space-y-4">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-lg sm:text-xl font-medium text-gray-600">
                 Loading your resumes...
               </p>
             </div>
           ) : resumes.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl shadow-lg border border-gray-200">
-              <p className="text-2xl font-semibold text-gray-700 mb-4">
+            <div className="flex flex-col items-center justify-center py-12 sm:py-16 md:py-20 bg-white rounded-xl shadow-lg border border-gray-200 px-4">
+              <p className="text-xl sm:text-2xl font-semibold text-gray-700 mb-3 sm:mb-4 text-center">
                 Ready to make an impression?
               </p>
-              <p className="text-lg text-gray-500 mb-6 text-center max-w-md">
+              <p className="text-base sm:text-lg text-gray-500 mb-4 sm:mb-6 text-center max-w-md">
                 You haven't created any resumes yet. Let's get started with your
                 first one!
               </p>
               <button
                 onClick={handleCreateNew}
-                className="flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-400 focus:ring-opacity-75 transform hover:-translate-y-1"
+                className="flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 md:px-7 md:py-3.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg shadow-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-400 focus:ring-opacity-75 transform hover:-translate-y-1"
                 aria-label="Create Your First Resume"
               >
-                <PlusCircle size={24} />
-                <span className="text-lg">Create Your First Resume</span>
+                <PlusCircle size={20} className="sm:w-6 sm:h-6" />
+                <span className="text-sm sm:text-base md:text-lg">Create Your First Resume</span>
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
               {resumes.map((resume) => {
                 const previewScale = 0.35;
-                const previewHeight = 256;
+                const previewHeight = 200;
                 const aspectRatio = 0.79;
                 const previewWidth = previewHeight * aspectRatio;
 
@@ -287,7 +290,7 @@ const Dashboard = () => {
                   <div
                     key={resume._id}
                     className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 border border-gray-200 flex flex-col"
-                    style={{ width: "100%", maxWidth: "400px" }}
+                    style={{ width: "100%", maxWidth: "400px", margin: "0 auto" }}
                   >
                     {/* Resume Preview Area */}
                     <div
@@ -313,7 +316,7 @@ const Dashboard = () => {
                     </div>
 
                     {/* Title and Actions */}
-                    <div className="p-4 flex flex-col gap-3 bg-gray-50 border-t border-gray-200">
+                    <div className="p-3 sm:p-4 flex flex-col gap-2 sm:gap-3 bg-gray-50 border-t border-gray-200">
                       {editingResumeId === resume._id ? (
                         <div className="flex items-center gap-2">
                           <input
@@ -332,7 +335,7 @@ const Dashboard = () => {
                             className="p-1.5 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-200"
                             title="Save Title"
                           >
-                            <Check size={16} />
+                            <Check size={14} />
                           </button>
                           <button
                             onClick={(e) => {
@@ -342,12 +345,12 @@ const Dashboard = () => {
                             className="p-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-200"
                             title="Cancel Edit"
                           >
-                            <X size={16} />
+                            <X size={14} />
                           </button>
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
-                          <h3 className="text-lg font-semibold text-gray-800 truncate">
+                          <h3 className="text-base sm:text-lg font-semibold text-gray-800 truncate">
                             {resume.title || "Untitled Resume"}
                           </h3>
                           <button
@@ -358,27 +361,27 @@ const Dashboard = () => {
                             className="p-1 text-blue-500 hover:text-blue-600 transition-colors duration-200"
                             title="Edit Title"
                           >
-                            <Edit2 size={16} />
+                            <Edit2 size={14} />
                           </button>
                         </div>
                       )}
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs sm:text-sm text-gray-500">
                         Template:{" "}
                         {resume.template
                           ? resume.template.charAt(0).toUpperCase() +
                             resume.template.slice(1)
                           : "N/A"}
                       </p>
-                      <div className="flex gap-3">
+                      <div className="flex gap-2 sm:gap-3">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDelete(resume._id);
                           }}
-                          className="flex-1 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-200 text-sm font-medium"
+                          className="flex-1 py-1.5 sm:py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-200 text-xs sm:text-sm font-medium"
                           title="Delete Resume"
                         >
-                          <Trash2 size={16} className="inline mr-1" /> Delete
+                          <Trash2 size={14} className="inline mr-1" /> Delete
                         </button>
                       </div>
                     </div>

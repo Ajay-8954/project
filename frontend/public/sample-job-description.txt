@@ -1,1 +1,40 @@
-hi my name is 
+Job description
+Role & responsibilities
+
+We are looking for a Java Developer to build distributed applications using Spring Boot & Microservices.
+Must have HandsOn Coding Experience.
+Strong in core java & advance java (JDBC & Servlets)
+Active member in designing, coding, testing, and supporting application in PROD.
+Coding, UnitTesting, collaborating with other team members, for problem solving & building application.
+
+Preferred candidate profile
+
+Candidate with Prior Self Project Or Internship Experience.
+Trained individuals.
+Basic knowledge of Web mandatory
+Aware of Agile & Tools used in IT. Would be added advantage
+
+Perks and benefits
+
+Day-to-day exposure to work with industry professionals
+Great learning opportunity
+Working on cutting edge technologies
+Competitive CTC as per market standards
+
+Role: Back End Developer
+Industry Type: IT Services & Consulting
+Department: Engineering - Software & QA
+Employment Type: Full Time, Permanent
+Role Category: Software Development
+Education
+UG: B.Tech/B.E. in Computers, BCA in Computers, B.Sc in Computers
+PG: M.Tech in Computers, MCA in Computers, MS/M.Sc(Science) in Computers
+Key Skills
+Skills highlighted with ‘‘ are preferred keyskills
+Java
+JDBC
+Spring Boot
+MySQL
+Microservices
+Web Services
+SQL

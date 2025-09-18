@@ -4,13 +4,13 @@ body{
 }
 
 .resume-inner {
-  padding: 10mm;  /* reliable in PDF */
+  padding: 7mm;  /* reliable in PDF */
   box-sizing: border-box;
 }
 
 
 .template6-resume {
-    max-width: 170mm;
+    width: 170mm;
   min-height: 297mm;
   margin: 0 auto;
   font-family: Arial, sans-serif;
@@ -43,8 +43,37 @@ body{
 }
 
 /* SECTION LAYOUT */
+
+.template6-summary-section {
+  display: flex;
+  align-items: flex-start;  
+  border-bottom: 1px solid #ddd;
+  padding: 15px 0;
+}
+
+.template6-summary-left {
+  width: 40mm;
+  font-weight: bold;
+  color: #e94b35;
+  font-size: 13px;
+
+  text-transform: uppercase;
+}
+
+.template6-summary-right {
+  flex:1;
+}
+
+.template6-summary-right p {
+  margin: 0;
+  line-height: 1;
+  text-align: justify;
+  font-size: 13px;
+}
+
 .template6-section {
   display: flex;
+  align-items: flex-start;  
   border-bottom: 1px solid #ddd;
   padding: 15px 0;
 }
@@ -54,16 +83,20 @@ body{
 }
 
 .template6-left {
-  width: 178px;
+  width: 40mm;        
+  min-width: 40mm;
   font-weight: bold;
   color: #e94b35;
   font-size: 13px;
-  text-transform: uppercase;
+  text-transform: uppercase;  
 }
 
+
+
 .template6-right {
-  flex: 1;
+  flex:1;
   font-size: 13px;
+  
 }
 
 /* EXPERIENCE */

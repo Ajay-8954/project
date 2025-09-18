@@ -815,7 +815,7 @@ export default function ResumeForm() {
 
         <button
           type="button"
-          className="px-4 py-2 rounded-md transition-all duration-300 bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-lg flex items-center gap-2"
+          className="cursor-pointer px-4 py-2 rounded-md transition-all duration-300 bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-lg flex items-center gap-2"
           onClick={() => reset()}
         >
           <svg
@@ -836,7 +836,7 @@ export default function ResumeForm() {
 
      <div className="text-sm">
           <a
-            href="./public/AJAY_KUMAR_VISHWAKARMA.pdf" // Replace with the actual path or URL to your sample resume
+            href="/sample-resume.pdf" // Replace with the actual path or URL to your sample resume
             download="sample-resume.pdf"
             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
             aria-label="Download a sample resume to use as a template"
@@ -1053,10 +1053,11 @@ export default function ResumeForm() {
                     }
                   );
                   const data = await response.json();
+                  console.log(data);
                   if (data.summary) {
                     handleFieldChange("summary", data.summary);
                   } else {
-                    alert("Error: No summary returned from the server.");
+                    alert("Error:" + data.error);
                   }
                 } catch (error) {
                   alert("Error processing summary: " + error.message);
@@ -1109,7 +1110,7 @@ export default function ResumeForm() {
             className="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-2 focus:ring-blue-300 outline-none"
             value={manualForm.summary || ""}
             onChange={(e) => handleFieldChange("summary", e.target.value)}
-            placeholder="A brief summary about your professional background..."
+            placeholder="At least one of experience, skills, or projects o existing summary is required when generating or enhancing a summary..."
           />
         </div>
       )}

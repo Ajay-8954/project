@@ -165,11 +165,11 @@ const Template5 = forwardRef(({ data={} }, ref) => {
               <div key={i} className="education-item">
                 <div className="edu-left">
                   <h4 className="edu-school">{edu.school}</h4>
-                  <p className="edu-degree">{edu.degree}</p>
+                  <p className="template5-edu-degree">{edu.degree}</p>
                 </div>
                 <div className="edu-right">
                   <p className="edu-location">{edu.location}</p>
-                  <p className="edu-dates">
+                  <p className="template5-edu-dates">
                     {edu.startDate} - {edu.endDate}
                   </p>
                 </div>

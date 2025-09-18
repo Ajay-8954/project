@@ -1,103 +1,4 @@
-// import React from "react";
-// import { RocketIcon, FileTextIcon, SearchIcon } from "lucide-react";
-// import { useNavigate } from "react-router-dom";
-
-// const Home = () => {
-//   const navigate = useNavigate();
-
-//   return (
-//     <div className="min-h-screen flex flex-col bg-gradient-to-b from-white via-blue-50 to-blue-100">
-//       {/* Hero Section */}
-//       <section className="text-center py-20 px-4 animate-fade-in">
-//         <h2 className="text-5xl font-extrabold text-blue-800 mb-4 animate-slide-down">
-//           Build Smarter Resumes 🚀
-//         </h2>
-
-//         <p className="text-lg text-gray-700 max-w-xl mx-auto animate-fade-in-up">
-//           Create your professional resume, match it with job descriptions, and
-//           get AI-powered feedback instantly.
-//         </p>
-
-//         <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up">
-//           <button
-//             className="flex items-center justify-center px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg text-lg shadow-lg transition-all duration-300"
-//             onClick={() => navigate("/resume-builder")}
-//           >
-//             <RocketIcon className="mr-2" size={20} /> Create Resume
-//           </button>
-
-//           <button
-//             className="flex items-center justify-center px-6 py-3 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-100 text-lg shadow-sm transition-all duration-300"
-//             onClick={() => navigate("/analyze")}
-//           >
-//             <SearchIcon className="mr-2" size={20} /> Analyze Score
-//           </button>
-//         </div>
-//       </section>
-
-//       {/* Features Section */}
-//       <section className="bg-white py-16 px-6 animate-fade-in-up">
-//         <h3 className="text-3xl font-bold text-center text-blue-800 mb-12">
-//           Why Choose ResumeMatcher?
-//         </h3>
-
-//         <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto text-center">
-//           {[
-//             {
-//               icon: FileTextIcon,
-//               title: "Resume Builder",
-//               desc: "Create resumes tailored to your experience level – whether you're a fresher or experienced professional.",
-//             },
-//             {
-//               icon: SearchIcon,
-//               title: "JD Matching",
-//               desc: "Paste any job description to instantly match and score your resume for ATS compatibility.",
-//             },
-//             {
-//               icon: RocketIcon,
-//               title: "AI Feedback",
-//               desc: "Get smart suggestions to optimize your resume for recruiters and Applicant Tracking Systems.",
-//             },
-//           ].map((feature, index) => (
-//             <div
-//               key={index}
-//               className="p-8 bg-blue-50 border border-blue-100 rounded-2xl shadow-md hover:scale-105 transition-all duration-300"
-//             >
-//               <feature.icon className="mx-auto mb-4 text-blue-700 animate-pulse" size={40} />
-//               <h4 className="text-xl font-semibold text-blue-800 mb-2">{feature.title}</h4>
-//               <p className="text-sm text-gray-600">{feature.desc}</p>
-//             </div>
-//           ))}
-//         </div>
-//       </section>
-
-//       {/* ATS Information Section */}
-//       <section className="py-16 px-6 bg-gradient-to-r from-blue-100 to-blue-50 animate-fade-in-up">
-//         <h3 className="text-3xl font-bold text-center text-blue-800 mb-6">
-//           What is ATS and Why is it Important?
-//         </h3>
-
-//         <div className="max-w-4xl mx-auto text-center text-gray-700 text-lg space-y-4">
-//           <p>
-//             ATS stands for <span className="font-semibold">Applicant Tracking System</span>. It's software that companies use to
-//             filter, rank, and manage job applications automatically.
-//           </p>
-//           <p>
-//             If your resume isn't optimized for ATS, it might never reach human recruiters, even if you're qualified. That's why
-//             making your resume ATS-friendly increases your chances of getting noticed.
-//           </p>
-//           <p className="font-semibold text-blue-700">
-//             ResumeMatcher helps you build, analyze, and optimize your resume to pass ATS filters with ease.
-//           </p>
-//         </div>
-//       </section>
-//     </div>
-//   );
-// };
-
-// export default Home;
-
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   RocketIcon,
   FileTextIcon,
@@ -112,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import useAuthStore from "../store/useAuthStore";
-
 import { PenTool } from "lucide-react";
 
 // Framer Motion Variants for animations
@@ -137,22 +37,24 @@ const staggerContainer = {
 
 const Home = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore(); // Get authentication status
+  const { isAuthenticated } = useAuthStore();
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [autoRotateIndex, setAutoRotateIndex] = useState(0);
 
-  // Handle "Create New Resume" button click
+
   const handleCreateResumeClick = () => {
     if (isAuthenticated) {
-      navigate("/resume-builder"); // User is logged in, go to resume builder
+      navigate("/resume-builder");
     } else {
-      navigate("/login", { state: { from: "/resume-builder" } }); // Redirect to login with intended destination
+      navigate("/login", { state: { from: "/resume-builder" } });
     }
   };
 
   const handleAnalyzeResume = () => {
     if (isAuthenticated) {
-      navigate("/analyze"); // User is logged in, go to resume builder
+      navigate("/analyze");
     } else {
-      navigate("/login", { state: { from: "/analyze" } }); // Redirect to login with intended destination
+      navigate("/login", { state: { from: "/analyze" } });
     }
   };
 
@@ -161,16 +63,31 @@ const Home = () => {
       icon: FileTextIcon,
       title: "Intelligent Resume Builder",
       desc: "Effortlessly create a professional, ATS-optimized resume. Our smart editor guides you to include what matters most.",
+      color: '142, 202, 252',
     },
     {
       icon: SearchIcon,
       title: "Instant JD Analysis",
       desc: "Pinpoint keyword gaps and score your resume's match against any job description in seconds.",
+      color: '142, 252, 204',
     },
     {
       icon: RocketIcon,
       title: "AI-Powered Optimization",
       desc: "Get concrete, actionable feedback to enhance your resume, boost your score, and secure more interviews.",
+      color: '252, 208, 142',
+    },
+    {
+      icon: PenTool,
+      title: "Smart Templates",
+      desc: "Choose from professionally designed templates optimized for different industries and roles.",
+      color: '204, 142, 252',
+    },
+    {
+      icon: SearchIcon,
+      title: "Real-time Feedback",
+      desc: "Get instant suggestions as you build your resume to maximize impact and readability.",
+      color: '252, 142, 239',
     },
   ];
 
@@ -195,6 +112,18 @@ const Home = () => {
     },
   ];
 
+    // Auto rotation effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Only rotate if no card is being hovered
+      if (hoveredIndex === null) {
+        setAutoRotateIndex((prev) => (prev + 1) % features.length);
+      }
+    }, 3000); // Rotate every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [hoveredIndex, features.length]);
+
   return (
     <div className="min-h-screen w-full bg-slate-50 text-slate-800 overflow-x-hidden">
       {/* Hero Section */}
@@ -202,7 +131,6 @@ const Home = () => {
         <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]">
           <div className="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9D6FF,#ffffff)]"></div>
         </div>
-
         <motion.div
           initial="hidden"
           animate="visible"
@@ -226,15 +154,11 @@ const Home = () => {
               give you the tools to craft an ATS-beating resume that recruiters
               can't ignore.
             </motion.p>
-
-            {/* --- BOTH BUTTONS ARE PRESENT HERE --- */}
             <motion.div
               variants={fadeIn}
               className="mt-10 flex flex-col sm:flex-row justify-center md:justify-start gap-4"
             >
-              {/* Primary Button */}
               <div className="flex gap-4">
-                {/* Primary Button */}
                 <button
                   className="group flex items-center justify-center px-6 py-3 text-white bg-blue-500 hover:bg-purple-400 rounded-lg text-lg font-semibold shadow-lg shadow-blue-500/30 transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98]"
                   onClick={handleCreateResumeClick}
@@ -245,8 +169,6 @@ const Home = () => {
                   />
                   Create New Resume
                 </button>
-
-                {/* Secondary Button */}
                 <button
                   className="group flex items-center justify-center px-6 py-3 border border-slate-300 text-slate-700 bg-green-400 hover:bg-slate-400 rounded-lg text-lg font-semibold shadow-sm transition-all duration-300 transform hover:scale-[1.03] active:scale-[0.98]"
                   onClick={handleAnalyzeResume}
@@ -260,13 +182,10 @@ const Home = () => {
               </div>
             </motion.div>
           </div>
-
-          {/* Right Visual - 'Before & After' concept */}
           <motion.div
             variants={fadeIn}
             className="hidden md:flex items-center justify-center gap-4"
           >
-            {/* Before */}
             <div className="p-4 bg-white rounded-2xl shadow-lg shadow-slate-500/10 border border-slate-200 w-1/2">
               <div className="text-center font-bold text-red-500 mb-2">
                 BEFORE
@@ -281,7 +200,6 @@ const Home = () => {
               </div>
             </div>
             <ArrowRightIcon className="text-blue-500 flex-shrink-0" size={32} />
-            {/* After */}
             <div className="p-4 bg-white rounded-2xl shadow-2xl shadow-blue-500/20 border-2 border-blue-500 w-1/2 transform scale-110">
               <div className="text-center font-bold text-green-500 mb-2">
                 AFTER
@@ -301,51 +219,106 @@ const Home = () => {
         </motion.div>
       </section>
 
-      {/* Features Section */}
-      <section className="bg-white py-20 px-6 lg:px-8">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={staggerContainer}
-          className="max-w-6xl mx-auto"
-        >
-          <motion.h2
-            variants={fadeIn}
-            className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-4"
-          >
-            A Smarter Way to Job Hunt
-          </motion.h2>
-          <motion.p
-            variants={fadeIn}
-            className="text-lg text-center text-slate-600 mb-16 max-w-2xl mx-auto"
-          >
-            Our platform provides a complete toolkit to take you from
-            application to interview.
-          </motion.p>
-          <div className="grid md:grid-cols-3 gap-8">
-            {features.map((feature) => (
-              <motion.div
-                key={feature.title}
-                variants={fadeIn}
-                className="group p-8 bg-slate-50/50 rounded-2xl border border-slate-200 hover:border-blue-500 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 transform hover:-translate-y-2"
-              >
-                <div className="mb-5 w-14 h-14 rounded-full bg-white border border-slate-200 flex items-center justify-center group-hover:bg-blue-600 transition-all duration-300">
-                  <feature.icon
-                    className="text-blue-600 group-hover:text-white transition-all duration-300"
-                    size={28}
-                  />
-                </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-slate-600">{feature.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
+      {/* 3D Carousel Features Section */}
+      {/* 3D Carousel Features Section */}
+<section className="py-20 px-6 lg:px-8 bg-gradient-to-br from-white to-gray-50">
+  <motion.div
+    initial="hidden"
+    whileInView="visible"
+    viewport={{ once: true, amount: 0.3 }}
+    variants={staggerContainer}
+    className="max-w-6xl mx-auto"
+  >
+    <motion.h2
+      variants={fadeIn}
+      className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-4"
+    >
+      A Smarter Way to Job Hunt
+    </motion.h2>
+    <motion.p
+      variants={fadeIn}
+      className="text-lg text-center text-slate-600 mb-16 max-w-2xl mx-auto"
+    >
+      Our platform provides a complete toolkit to take you from
+      application to interview.
+    </motion.p>
+    
+    <div
+      className="relative w-full h-[500px] flex items-center justify-center"
+      onMouseLeave={() => setHoveredIndex(null)}
+    >
+      {features.map((feature, index) => {
+        const total = features.length;
+        
+        // Calculate the position difference from the center
+        let positionDiff = (index - autoRotateIndex + total) % total;
+        if (positionDiff > total / 2) positionDiff -= total;
+        
+        // Calculate rotation and position based on autoRotateIndex
+        const rotationOffset = positionDiff * (360 / total);
+        const xOffset = positionDiff * 40;
+        const scale = positionDiff === 0 ? 1.1 : 0.9;
+        const opacity = positionDiff === 0 ? 1 : 0.6;
+        const zIndex = positionDiff === 0 ? 10 : 1;
 
+        return (
+          <motion.div
+            key={index}
+            onMouseEnter={() => setHoveredIndex(index)}
+            animate={{
+              opacity: hoveredIndex === null ? opacity : (hoveredIndex === index ? 1 : 0.6),
+              scale: hoveredIndex === null ? scale : (hoveredIndex === index ? 1.15 : 0.9),
+              x: hoveredIndex === null ? xOffset : (hoveredIndex === index ? 0 : xOffset),
+              rotateY: hoveredIndex === null ? rotationOffset : (hoveredIndex === index ? 0 : rotationOffset),
+              zIndex: hoveredIndex === null ? zIndex : (hoveredIndex === index ? 20 : zIndex),
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            style={{
+              transformOrigin: "center center",
+              transformStyle: 'preserve-3d',
+              background: `linear-gradient(135deg, rgba(${feature.color}, 1), rgba(${feature.color}, 1))`,
+              borderColor: `rgba(${feature.color}, 0.8)`,
+              boxShadow: positionDiff === 0
+                ? `0px 20px 40px rgba(${feature.color}, 0.4)`
+                : `0px 5px 15px rgba(0, 0, 0, 0.05)`,
+            }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+                       w-60 h-73 md:w-65 md:h-75 p-6 rounded-3xl border 
+                       backdrop-blur-sm transform-style-3d cursor-pointer
+                       transition-all duration-300 z-auto"
+          >
+            <div className="flex flex-col items-center justify-center text-center h-full">
+              <motion.div
+                animate={{
+                  scale: positionDiff === 0 ? 1.2 : 1,
+                }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                className="mb-4 w-16 h-16 rounded-full flex items-center justify-center shadow-lg"
+                style={{
+                  background: `rgba(${feature.color}, 0.8)`,
+                  border: `2px solid rgba(255, 255, 255, 0.4)`,
+                }}
+              >
+                <feature.icon
+                  className="text-white"
+                  size={32}
+                />
+              </motion.div>
+              <h3 className="text-xl md:text-2xl font-bold text-slate-800 mb-2">
+                {feature.title}
+              </h3>
+              <p className="text-sm text-slate-600 leading-snug">
+                {feature.desc}
+              </p>
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
+  </motion.div>
+</section>
+
+      {/* Rest of the component remains the same */}
       {/* How It Works Section */}
       <section className="py-20 px-6 lg:px-8 bg-slate-50">
         <motion.div
@@ -392,7 +365,7 @@ const Home = () => {
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
+          viewport={{ once: true, amount: 0.4 }}
           variants={staggerContainer}
           className="max-w-5xl mx-auto"
         >
@@ -434,7 +407,7 @@ const Home = () => {
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
+          viewport={{ once: true, amount: 0.4 }}
           variants={fadeIn}
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
